@@ -1,0 +1,39 @@
+import requests
+import datetime
+
+def send_message(message):
+    # Remplacez 'TOKEN' par votre token d'API de telegram
+    # et 'CHAT_ID' par l'identifiant de chat (groupe ou utilisateur) où vous souhaitez envoyer le message
+    url = f"https://api.telegram.org/botTOKEN/sendMessage?chat_id=CHAT_ID&text={message}"
+    requests.get(url)
+
+# Récupérez la liste des dix meilleurs traders de Binance
+response = requests.get("https://api.binance.com/api/v3/ticker/24hr")
+data = response.json()
+
+top_traders = {}
+for item in data:
+    # Filtrez la liste des traders en fonction de leur performance
+    if item['symbol'].startswith('BTC'):
+        top_traders[item['symbol']] = item['traderId']
+    if len(top_traders) == 10:
+        break
+
+# Surveillez en permanence les trades de ces traders
+while True:
+    # Récupérez la liste des trades récents
+    response = requests.get("https://api.binance.com/api/v3/trades")
+    trades = response.json()
+    for trade in trades:
+        if trade['symbol'] in top_traders:
+            # Envoyez un message sur telegram lorsqu'un des traders lance un trade
+            date = datetime.datetime.fromtimestamp(trade['timestamp'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            message = f"Le trader {trade['symbol']} (ID Binance : {top_traders[trade['symbol']]}) a lancé un trade "
+            message += "d'achat" if trade['isBuyerMaker'] else "de vente"
+            message += f" à {trade['price']} BTC"
+            if 'qty' in trade:
+                message += f" avec une position de {trade['qty']}"
+            if 'leverage' in trade:
+                message += f" et un levier de {trade['leverage']}"
+            message += f" le {date}"
+            send_message(message)
