@@ -4,7 +4,7 @@ import datetime
 def send_message(message):
     # Remplacez 'TOKEN' par votre token d'API de telegram
     # et 'CHAT_ID' par l'identifiant de chat (groupe ou utilisateur) où vous souhaitez envoyer le message
-    url = f"https://api.telegram.org/botTOKEN/sendMessage?chat_id=CHAT_ID&text={message}"
+    url = f"https://api.telegram.org/bot5877943621:AAFuDRL7Qm8vOvhIaVVg-MVgU4-Rzr_hF2s/sendMessage?chat_id=1137303758&text={message}"
     requests.get(url)
 
 # Récupérez la liste des dix meilleurs traders de Binance
